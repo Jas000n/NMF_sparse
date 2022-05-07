@@ -1,24 +1,29 @@
 import numpy as np
 
 
-def get_k_ratings(matrix, U):
-    m = matrix.shape[0]
-    n = matrix.shape[1]
+def get_k_ratings(erm, rm,U,k):
+    m = erm.shape[0]
+    n = erm.shape[1]
     #print(matrix)
-    row_U = matrix[U, :]
+    row_U = erm[U, :]
     avarage = row_U.sum() / n
-
+    row_actual = row_U.tolist()
     #print(row_U, avarage)
-    row_i = row_U - avarage
+    row_U = row_U - avarage
     #print(row_i)
-    arg = row_i.argsort().tolist()
+    arg = row_U.argsort().tolist()
     arg = arg[::-1]
-    rated_list = get_rated_index(matrix,U)
-    print(rated_list)
+    rated_list = get_rated_index(rm, U)
+    #print(rated_list)
     for i in arg:
         if(i in rated_list):
-            print(i)
-    print(arg)
+            #print(i)
+            arg.remove(i)
+    arg = arg[0:k]
+    print("Now recommend {} item for User {}, according to {} items he has rated, his average rating score is {}:".format(k,U,len(rated_list),avarage))
+    for i in range(0,k):
+        print("item id:{}\t\testimated rating for him:{}".format(arg[i],row_actual[arg[i]]))
+
 
 
 # return rated list of user U according to a rating matrix, in the form of index
