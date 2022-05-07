@@ -1,0 +1,32 @@
+import numpy as np
+
+
+def get_k_ratings(matrix, U):
+    m = matrix.shape[0]
+    n = matrix.shape[1]
+    #print(matrix)
+    row_U = matrix[U, :]
+    avarage = row_U.sum() / n
+
+    #print(row_U, avarage)
+    row_i = row_U - avarage
+    #print(row_i)
+    arg = row_i.argsort().tolist()
+    arg = arg[::-1]
+    rated_list = get_rated_index(matrix,U)
+    print(rated_list)
+    for i in arg:
+        if(i in rated_list):
+            print(i)
+    print(arg)
+
+
+# return rated list of user U according to a rating matrix, in the form of index
+def get_rated_index(matrix, U):
+    row_u = matrix[U, :]
+    arg_rated = row_u.argsort()
+    rated_list = []
+    for i in arg_rated:
+        if (row_u[i] != 0):
+            rated_list.append(i)
+    return rated_list

@@ -64,9 +64,9 @@ def creat_matrix(list):
     max_width=0
     max_hight=0
     for i in list:
-        if i[0]>max_hight:
+        if int(i[0])>max_hight:
             max_hight=i[0]
-        if i[1]>max_width:
+        if int(i[1])>max_width:
             max_width=i[1]
     '''
    
