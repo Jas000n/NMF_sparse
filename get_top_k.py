@@ -22,7 +22,7 @@ def get_k_ratings(erm, rm,U,k):
     arg = arg[0:k]
     print("Now recommend {} item for User {}, according to {} items he has rated, his average rating score is {}:".format(k,U,len(rated_list),avarage))
     for i in range(0,k):
-        print("item id:{}\t\testimated rating for him:{}".format(arg[i],row_actual[arg[i]]))
+        print("item id:{}\t\testimated rating for him:{}".format(arg[i]+1,row_actual[arg[i]]))
 
 
 
