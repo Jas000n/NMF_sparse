@@ -37,6 +37,7 @@ trainset = data.build_full_trainset()
 algo =NMF()
 algo.fit(trainset)
 
+
 # Than predict ratings for all pairs (u, i) that are NOT in the training set.
 testset = trainset.build_anti_testset()
 predictions = algo.test(testset)

@@ -19,10 +19,4 @@ algo.fit(trainset)
 # cross_validate(algo, data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
 # time2 = time.time()
 # print("using {} seconds!".format(time2-time1))
-while(True):
-    uid = input("please entry an User id:")  # raw user id (as in the ratings file). They are **strings**!
-    iid = input("please entry an Item id:")  # raw item id (as in the ratings file). They are **strings**!
 
-    # get a prediction for specific users and items.
-    pred = algo.predict(uid, iid)
-    print(pred)
