@@ -18,17 +18,14 @@ labels = kmeans.labels_
 type2 = []
 for i in range(labels.shape[0]):
     if (labels[i] == 1):
-        type2.append(i)
+        type2.append(i+1)
 
 print('type2=', type2)
-for j in train_list:
-    if(j[0] not in type2):
-        train_list.remove(j)
-for j in test_list:
-    if(j[0] not in type2):
-        test_list.remove(j)
-test_rm = mv100.creat_matrix(test_list)
-train_rm = mv100.creat_matrix(train_list)
+for i in type2:
+    train_rm[i,:] = np.zeros((1,1682))
+for i in type2:
+    test_rm[i,:] = np.zeros((1,1682))
+
 
 
 
