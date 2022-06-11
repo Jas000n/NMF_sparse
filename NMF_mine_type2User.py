@@ -18,7 +18,7 @@ labels = kmeans.labels_
 type2 = []
 for i in range(labels.shape[0]):
     if (labels[i] == 1):
-        type2.append(i+1)
+        type2.append(i)
 
 print('type2=', type2)
 for i in type2:
