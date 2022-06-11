@@ -104,6 +104,6 @@ for epoch in range(0, epochs):
     test_loss.append(test_loss_)
     train_loss.append(train_loss_)
     #plt.plot(x, train_loss, test_loss)
-    np.save("save_matrix_type2"+str(epoch), np.array(p.dot(q).todense()))
+    np.save("./type2/save_matrix_type2"+str(epoch), np.array(p.dot(q).todense()))
 
 
