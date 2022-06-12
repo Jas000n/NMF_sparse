@@ -6,6 +6,8 @@ from sklearn.cluster import KMeans
 import mv100
 from scipy.sparse import csr_matrix
 
+import plt
+
 train_list = mv100.mv1002list("./ml-100k/u5_fix.base")
 test_list = mv100.mv1002list("./ml-100k/u5.test")
 test_rm = mv100.creat_matrix(test_list)
@@ -99,7 +101,7 @@ for epoch in range(0, epochs):
     x.append(epoch + 1)
     test_loss.append(test_loss_)
     train_loss.append(train_loss_)
-    #plt.plot(x, train_loss, test_loss)
+    plt.plot(x, train_loss, test_loss, name="type1_result.png")
     np.save("./type1/save_matrix_type1_"+str(epoch), np.array(p.dot(q).todense()))
 
 
