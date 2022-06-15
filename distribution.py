@@ -6,7 +6,7 @@ from surprise import Dataset
 
 import mv100
 
-mode = "clustered"
+mode = "type1&type2"
 if mode == "general_mymodel":
     erm = np.load("save_matrix299.npy", allow_pickle=True)
     erm = erm.reshape((1, -1))
@@ -69,11 +69,35 @@ elif mode == "general_compare":
     plt.legend()
     plt.show()
 elif mode == "clustered":
-    type1 = np.load("./clusters/type1.npy", allow_pickle=True)
-    type2 = np.load("./clusters/type2.npy", allow_pickle=True)
+    type1_actual = np.load("./clusters/type1.npy", allow_pickle=True)
+    type2_actual = np.load("./clusters/type2.npy", allow_pickle=True)
 
-    sns.distplot(type1, label="preferences of type1 people")
-    sns.distplot(type2, label="preferences of type2 people")
+    sns.distplot(type1_actual, label="preferences of type1 people")
+    sns.distplot(type2_actual, label="preferences of type2 people")
+    plt.title("my model")
+    plt.legend()
+    plt.show()
+
+elif mode == "type1&type2":
+    type1_actual = np.load("./clusters/type1.npy", allow_pickle=True)
+    type2_actual = np.load("./clusters/type2.npy", allow_pickle=True)
+
+    type1_actual_plt=[]
+    type2_actual_plt=[]
+    for i in type1_actual:
+        for j in range(0,int(i[1]* 1586126 / 100)):
+            type1_actual_plt.append(i[0])
+    for i in type2_actual:
+        for j in range(0, int(i[1] * 1586126 / 100)):
+            type2_actual_plt.append(i[0])
+    sns.distplot(type1_actual_plt, label="preferences of type1 people")
+    sns.distplot(type2_actual_plt, label="preferences of type2 people")
+    type1_erm = np.load("./type1/save_matrix_type1_299.npy", allow_pickle=True)
+    type1_erm = type1_erm.reshape((1, -1))
+    type2_erm = np.load("./type2/save_matrix_type2_299.npy", allow_pickle=True)
+    type2_erm = type2_erm.reshape((1, -1))
+    sns.distplot(type1_erm, label="estimated for type1")
+    sns.distplot(type2_erm, label="estimated for type2")
     plt.title("my model")
     plt.legend()
     plt.show()

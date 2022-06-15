@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import mv100
 
@@ -21,10 +23,13 @@ X = np.array(train_matrix)
 test_list = mv100.mv1002list("./ml-100k/u5.base")
 test_matrix = mv100.creat_matrix(test_list)
 from sklearn.decomposition import NMF
-
+time1 = time.time()
 model = NMF(n_components=50, init='random', random_state=0, max_iter=1000)
 W = model.fit_transform(X)
 H = model.components_
 erm = W.dot(H)
 print(type(erm))
 print(rmse(test_matrix, erm))
+print("*"*100)
+time2 =time.time()
+print(time2-time1)

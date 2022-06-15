@@ -14,9 +14,9 @@ algo = NMF(n_epochs=300, n_factors=50)
 algo.fit(trainset)
 
 
-# # Run 5-fold cross-validation and print results
-# time1 = time.time()
-# cross_validate(algo, data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
-# time2 = time.time()
-# print("using {} seconds!".format(time2-time1))
+# Run 5-fold cross-validation and print results
+time1 = time.time()
+cross_validate(algo, data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
+time2 = time.time()
+print("using {} seconds!".format(time2-time1))
 
