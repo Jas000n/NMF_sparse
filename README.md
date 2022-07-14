@@ -1,6 +1,7 @@
 # my NMF vs sklearn NMF
 
 ## Shunyu Yao (Jason)
+#  [final paper](https://github.com/Jas000n/NMF_sparse/blob/master/final_paper.pdf)。
 
 ### 0. outline
 
