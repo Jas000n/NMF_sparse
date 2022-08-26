@@ -1,276 +1,226 @@
-# my NMF vs sklearn NMF
+# None-negative Matrix Factorization on Sparse Matrix in the Field of
 
-## Shunyu Yao (Jason)
-#  [final paper](https://github.com/Jas000n/NMF_sparse/blob/master/final_paper.pdf)。
+# Recommender System
 
-### 0. outline
+## Shunyu Yao
 
-​																1. compare RMSE loss between them(sklearn vs mine)
-
-​																2. why sklearn is worse?
-
-​																3. my algorithm
-
-​																4. next step
-
-### 1. RMSE loss on test set for both algorithm
-
-
-
-#### 1.0 about RMSE
-
-***R***oot ***M***ean ***S***qure ***E***rror
-
-![查看源图像](https://ichi.pro/assets/images/max/724/1*9hQVcasuwx5ddq_s3MFCyw.gif)
-
-#### 1.1 Sklearn
-
-RMSE 2.23005 
-
-convergent at Iterations about 1500
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1dogvbh55j20ss0lidgl.jpg" alt="image-20220417155155048" style="zoom:50%;" />
-
-#### 1.2 My NMF model
-
-RMSE 0.94012 
-
-interation 300, still not convergent
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1dogy0escj20hs0dc3yt.jpg" alt="image-20220409203735335" width = 800 />
-
-### 2. why sklearn lib is worse?
-
-TOO faithful about the dataset
-
-​	-**fit those 'zeros'**
-
-​	cannot fully comprehend the question for this latent factor model
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1dogw83uvj20pa0m00ta.jpg" alt="Screenshot_2022-04-09-20-13-56-704_com.microsoft.office.onenote" style="zoom:50%;" />
-
-### 3. My algorithm
-
-#### 3.1 objective function
-
-$\Sigma_j (RM_j - ERM_j)^2$
-
-where j is a rating in training set, by user U on item I
-
-I ignored those missing data, and focused on the existing entries
-
-#### 3.2 parameter update
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1dogx6w55j214m0nswfk.jpg" alt="Screenshot_2022-04-10-11-37-24-274_com.microsoft.office.onenote" style="zoom:50%;" />
-
-let objective function be F:
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1doh0tztsj210w0ql3zr.jpg" alt="Screenshot_2022-04-10-11-45-14-501_com.microsoft.office.onenote" style="zoom:50%;" />
-
-### 4. Next step
-
-##### 1. speed
-
-Although sklearn's NMF is worth than my algorithm, it runs much faster than mine!!
-
-* 10s for 20000 iterations
-* 70s per iteration 
-
-###### 1.1 multi-thread
-
-​	GIL(global interpreter lock)  make sure that multi-thread wont mess up a variable
-
-		- c, java?
-		- Multi-process?
-
-###### 1.2 for loop - too slow
-
-​	go through each entry in training set  (SGD?)
-
-##### 2. regularization
-
-about overfitting
-
-​	-no regularization is implemented for now （2 norm ?)
-
-​	-but the loss on the test set is still diclining?
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1doh1vbiij21bd0u0409.jpg" alt="Screenshot_2022-04-09-20-31-25-861_com.microsoft.office.onenote" style="zoom:33%;" />
-
-### 0. outline of ShunyuYao's presentation
-
-1. Ignore zeros using library - Sklearn, Surprise, torchNMF
-2. generate rating scores
-3. GNN
-
-### 1. Ignore zeros using library - Sklearn, Surprise, torchNMF
-
-#### 1.1 sklearn
-
-For support of missing data in sklearn, I have go through document and finally find something in sklearn's github repository.
-
-In sklearn's official GitHub repository, issue #8447 and #8474 mentioned this approach, to ignore those missing data instead of fitting them in the process of decomposition.
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1dogglvhuj20t604oaak.jpg" alt="image-20220417150729155" width=400 />
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1dogirhzhj218e05c0tx.jpg" alt="image-20220417150755698" width=400 />
-
-In 8447, they basically discussed the plausibility and validity for NMF in recommender system, some paper were presented. This issue is still open.
-
-In 8474, after some discussion, some contributors decided to move this function to another library as an extra support library for sklearn. This issue is open and work-in-progress. [WIP]
-
-#### 1.2 surprise
-
-***SurPRISE***  stands for Simple Python RecommendatIon System Engine. It is basically build for this kind of stuff.
-
-##### 1.2.1 RMSE loss
-
-Trained with the same trianing sets, the same test sets and same amount of iterations, 300, and the same length of the W and H, 50, which suggest a movie has 50 attributes, such as the degree of horror, humorous, si-fi elements and etc.
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1dogkftmaj20we086gmk.jpg" alt="image-20220417151855013" style="zoom:50%;" />
-
-Runs much faster than my model, probably using matrices multiplication instead of for loop. And the loss is lower than mine, 0.94, also. Since it has introduced regularization. 
-
-##### 1.2.2 problem?
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1dogjmla8j20eq012a9v.jpg" alt="image-20220417151709911" style="zoom:50%;" />
-
-Can only utilize one core of the CPU.
-
-#### 1.3 torchNMF
-
-Bases on torch.nn.module, can make full use of CPU, even CUDA devices.
-
-But unfortunately, doesnot support the decomposition of matrices with missing data.
-
-![image-20220417154044291](https://tva1.sinaimg.cn/large/e6c9d24egy1h1dogf5ryzj20k4028mx9.jpg)
-
-#### 1.4 conclusion
-
-|         Model         |      Accuracy       |                  Speed                   |
-| :-------------------: | :-----------------: | :--------------------------------------: |
-|        MyModel        |        ~0.94        |              Very very slow              |
-|        Sklearn        | Cannot ignore zeros |                   Fast                   |
-|       Surprise        |       0.9359        |     slow, can utilize only one core      |
-|       TorchNMF        | Cannot ignore zeros |                Very fast                 |
-| MyModel using PyTorch |  can ignore zeros   | very fast, can use CUDA for acceleration |
-|                       |                     |                                          |
-
-For next step I will try my model and algorithm using PyTorch , and then it will be accurate and fast at the same time!
-
-### 2. generate rating score
-
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1doghscnlj21420c4ta5.jpg" alt="image-20220417161039560" style="zoom:50%;" />
-
-### 3. with GNN?
-
-In the session before last session, I mentioned that I will read more about GNN and work with RenZhu. 
-
-I have just got a shallow understanding of GNN, the structure of each neuron, the idea behind it. And have tried some of them. Got the performence curve printed out. https://github.com/zhuty16/GES
-
-For next step I will dive deeper in the field of GNN, get to know it's network structure and purpose of each part.
-
-### 0. outline
-
-1. My work during last week
-2. Next step?
-
-### 1. my work during last week
-
-#### 1.1 top k recommendation
-
-![image-20220501180150770](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i2ohjj2j21c00u0dmg.jpg)
-
-using suprise library, 10 items for each user
-
-will try generate recommendation using my model and other models in open source library
-
-* is that a effective way of comparing models?
-
-#### 1.2 pytorch
-
-Was going to do non-negative matrices decomposition(NMF), but somethings else occur to me.
-
-##### 1.2.1 first attempt 
+## June 16, 2022
 
 ```
-1  1  5  874965758
-1  2  3  876893171
-1  3  4  878542960
-1  4  3  876893119
-1  5  3  889751712
-1  7  4  875071561
-1  8  1  875072484
-1  9  5  878543541
-1  11 2  875072262
-1  13 5  875071805
+Abstract
+None-negative Matrix Factorization is a method that can decompose a matrix into two or more matrices which
+can be multiplied together to obtain the original matrix. Specifically, in the field of recommender system, we split
+the sparse rating matrix into two matrices, denoted as V = w * h. As a latent factor model, the equation has two
+matrices with semantic meaning. The first matrix, w, represents the weight for users’ preferences, while the second
+matrix, h, represents the scores each item has on those features, when multiply, it generate a matrix that indicate
+all users’ estimated rating on every movie. After I done my research on previous models, I developed my NMF
+model with the feature of ignore zeroes, initialize specially according to the input and has the potential to train
+with multi-thread, and then I classified users into different groups and trained my model on them respectively, and
+plot the distribution of different groups of users as well as specific users.
+```
+## Contents
+
+1 Previous model vs. my NMF model 1
+1.1 Sklearn, TorchNMF and Surprise....................................... 1
+1.2 my model.................................................... 2
+1.2.1 Objective Function........................................... 2
+1.2.2 RMSE loss............................................... 2
+1.2.3 Versus surprise............................................. 3
+
+2 Classify users into groups 4
+2.1 K means..................................................... 4
+2.2 train my model on two groups of users.................................... 5
+
+3 next step 5
+
+References 6
+
+## 1 Previous model vs. my NMF model
+
+## 1.1 Sklearn, TorchNMF and Surprise
+
+```
+Figure 1: Compareation between previous models
+```
+I chose MovieLens100k as my dataset and tested several libraries on it. MovieLens100k[1] is a stable
+benchmark dataset, which has 100,000 ratings from 1000 users on 1700 movies, released 4/1998. I
+trained Sklearn model, TorchNMF model and Surprise model on this dataset, and use the root mean
+
+square error (RMSE) loss as the criterion:RM SE=
+
+```
+qPN
+i=1(Predictedi−Actuali)^2
+N
 ```
 
-<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h36i2lhvruj20o20lyjsy.jpg" alt="image-20220501183253292" style="zoom:50%;" />
+As is shown in the graph above, Sklearn[4] and TorchNMF[3] both have a very large loss, because both
+model cannot ignore those zeroes in the input matrix. In the MovieLens100k dataset, the sparse ratio
+is 5%, which means every user interact with 5% of movies in average. And these two models cannot
+ignore those misleading zeroes, and treated them as if users hate 95% of movies and rated them zero
+point.
 
-#### 1. Generate K recommendations for user U
+As for Surprise[5], it is the abbreviation for Simple Python Recommendation System Engine which
+is a famous library built for this kind of stuff. It can fit the original matrix very well for it can ignore
+those zeroes, nevertheless, it does not run as fast as Sklearn and TorchNMF, and can utilize only one
+core of the CPU. So, in the following part of my paper, I will compare it with my model.
 
-![image-20220515195016114](https://tva1.sinaimg.cn/large/e6c9d24egy1h371tu66c7j21gg0ewwhk.jpg)
+### 1.2 my model
 
-1. Load the whole estimated rating matrix( it is generated by the my model during the training process)
+```
+In my model, there are several techniques I used to improve the quality of recommendation.
+```
+The first is sparse matrix. I use sparse matrix[2] from science python to store the original matrix,
+this special data structure can accelerate the process of accessing entries and calculating. In stead of
+a two dimensional list, it can compressed the sparse matrix according to rows or columns for different
+occasion. It can largely reduce the memory my program take, and can access entries faster.
 
-   <img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h371t8qwj8j20ik0k0gn2.jpg" alt="image-20220508130017043" style="zoom:50%;" />
+The second is zeroes-mask. I focus on those none zero entries, and calculate gradient on them, to
+make sure my model can understand the task.
 
-2. Sort the specific row according to the input user ID, from high to low
+I use special initialization techniques. Because the ratings range from 1 to 5 points, so I initialized the
+two matrices w and h, so after multiply the matrix V should be full of 3. So, it will convergent faster.
 
-3. Select top k item, along with the estimated rating score
+1.2.1 Objective Function
 
-4. Exclude the items he has rated
+Denote RM as the actual rating matrix, w as the weight matrix, h as the feature matrix, E is the set
+of all non-zero entries, k is the length of w and the height of h, which is a hyper parameter, for each
+[u][i] in E, the relation is: RM[u][i] =
 
-5. Generate recommendations
+```
+Pk
+j=1w[u][i]h[j][i]
+```
+My objective function is:F=
 
-#### 2. some problem
+#### P
 
-some of the popular item keeps appearing on the lists
+```
+v,i∈E(RM[u][i]−ERM[u][i]))
+```
+(^2) ,
+and the gradient for each none-zero entry is:
 
-##### remove popular movies and focus on individual preference
+#### ∂F
 
-remove movies appearing on list of more than 1/3 of all or 1/2  of all.
+```
+∂w[u][o]
+```
+#### =
 
-# my work during last week 5.22
+```
+∂(RM[u][i]−ERM[u][i])^2
+∂w[u][i]
+= 2 Error[u][i]∗h[j][i]
+```
+1.2.2 RMSE loss
 
-1. convert id to movie name, keep most three significant bits
+```
+Figure 2: RMSE loss of my model during training
+```
 
-   ![image-20220522154944050](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i4xj2brj21bq0f0tax.jpg)
+After 300 iterations, it reached 0.939 on the MovieLens100k datasets. As it is shown in the picture,
+although no regularization was added in the objective function, the test loss is still declining after 300
+iterations, it is safe to say my model does not over fitting at 300 epochs, still a regularization should
+be include in order to reach a better result.
 
-2. distribution of all ratings given by all users on all movies
+1.2.3 Versus surprise
 
-   
+```
+Figure 3: Distribution of actual ratings, Suprise, and mine
+```
+Because a lower loss on the test sets does not necessarily lead to a better recommendation, I examed
+the distribution of all users on on movies.
 
-   ![image-20220522163111622](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i507ngvj20hs0dcdgc.jpg)
+As it is shown in the graph, the peak of my model is a little bit over 3 and the peak of surprise library
+is a little bit lower than 3.
 
-   ![image-20220522163830378](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i4z92ysj20hs0dct97.jpg)
+```
+Figure 4: Distribution of user number 123
+```
 
-   factor = 50, epoch = 300
+```
+Figure 5: Distribution of user number 234
+```
+As I examed the distribution of random user, it turns out that my model indeed tend to give high
+ratings than the surprise model, which tend to give negative scores.
 
-   ![image-20220522164231943](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i51e69aj20hs0dct9a.jpg)
+## 2 Classify users into groups
 
-3. distribution on random user
+Because user varies from one another, it makes even harder to capture all users’ preferences with one
+model. So, I classify users into different groups according their preferences and train my model on
+them separately.
 
-![image-20220522164946889](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i4t4zlcj20hs0dc3z7.jpg)
+### 2.1 K means
 
-![image-20220522164955546](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i4wg08wj20hs0dc752.jpg)
-
-![image-20220522165004656](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i4uqp0kj20hs0dcaau.jpg)
-
-![image-20220522165012651](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i52qxe7j20hs0dcq3q.jpg)
-
-![image-20220522165022332](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i4vk87wj20hs0dcdgj.jpg)
-
-![image-20220522165030242](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i54zem7j20hs0dcdgj.jpg)
-
-![image-20220522165037879](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i4yfgpyj20hs0dcwf6.jpg)
-
-![image-20220522222144617](https://tva1.sinaimg.cn/large/e6c9d24egy1h36i53vweoj20hs0dcwf6.jpg)
-
-
-
-
+```
+Figure 6: Distribution of 2 group of people
+```
+K means is an unsupervised learning algorithm, which can classify users into different groups. I will
+explain how it works briefly. First step, randomly select K centroids from the all points. Second step,
+for all points, calculate the distance between it and each centroids. Third step, for every point, find
+the nearest centroid, and label this point to this class. Fourth step, re-calculate centroids according
+to the classification. And repeat those four steps until the centroids do not change. I use K means
+algorithm on the MovieLens100k dataset and classify users into two group.
 
 
+### 2.2 train my model on two groups of users
+
+```
+Figure 7: RMSE loss of models trained on group1 and group
+```
+```
+Figure 8: Difference between two models and one model
+```
+There are 943 users in total, in type1 there are 694 strict users who tend to give more 3 and 2, and in
+type2 there are 294 generous users who tend to give more 4 and 5. After training 300 epochs, model
+can predict type1 users’ behavior more accurately than the beseline, which is train my model on the
+whole dataset. On the other hand, can not capture type2 users’ preferences that good, compared to
+baseline. But the number of type1 user is larger than the number of type2 user. So, the general
+out come will be better, still, more work should be done on type2 user in order to improve their
+experiences.
+
+## 3 next step
+
+Due to some unexpected situation, I have to carry out the whole project on my own, including all the
+coding, all the paper work and presentation. I was indeed fully engaged in the PBL, but still, it is a
+pity that some features I was going to implemented that I have not done, some flaws I was going to
+fix remains unsolved.
+
+The first is confidence, I have not come up with a function to assess how good my model is, besides
+using loss functions, like RMSE or MAE.
+
+
+The second thing is multi-process. I actually have implement multi-thread version of my model, but
+python was invented in 1990s, by then, a CPU only have one core, so it has a GIL(global interpreter
+lock) to make sure the several threads in program would not mess up a variable. But nowadays, a
+CPU usually has 4 or more cores, multi-thread in python will not accelerate training. So, introducing
+multi-process would be more reasonable.
+
+The last thing is regularization. As I mentioned in 1.2.2 RMSE loss, I did not add a regularization in
+the objective function, and the model is not yet over fitting, still, add a regularization and re-train my
+model would be better. An Euclidean norm or an Absolute-value norm is enough.
+
+Here is the link for my github repository of all my working during PBL, you can find all the code
+and explanation to my work. If I have time, I will finish all the features I mentioned in the 3.next
+setp, and upload my work to this repository, you can access it by clicking the hyper reference –
+https://github.com/Jas000n/NMFsparse
+
+## References
+
+```
+[1] https://grouplens.org/datasets/movielens/100k/
+```
+```
+[2] https://scipy.github.io/devdocs/reference/sparse.htmlmodule-scipy.sparse
+```
+```
+[3] https://pypi.org/project/torchnmf/
+```
+```
+[4] http://surpriselib.com/
+```
+```
+[5] https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.NMF.html
+```
 
