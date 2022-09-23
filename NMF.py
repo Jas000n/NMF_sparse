@@ -1,3 +1,17 @@
+import argparse
+
+parser = argparse.ArgumentParser(description="using non-negative matrix decomposition to reconstruct users's rating "
+                                             "matrix in the field of recommendation")
+group = parser.add_mutually_exclusive_group()
+group.add_argument("-lr",help="learning rate",default=0.0001,type=float)
+group.add_argument("-k",help="width of matrix1 and length of matrix2",default=50,type=int)
+group.add_argument("-e",help="max iterations",default=30,type=int)
+group.add_argument('-o',help="path of output files",default="./saved_path")
+parser.add_argument("train_matrix", help="input test matrix")
+parser.add_argument("test_matrix", help="input test matrix")
+args = parser.parse_args()
+
+print(args.train_matrix,args.test_matrix)
 import time
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -36,22 +50,22 @@ def updateQ(rows, cols, p_const, q, error_matrix):
             print("Q updating finished {}%!".format(i / 800))
 
 
-train_list = mv100.mv1002list("./ml-100k/u5_fix.base")
-test_list = mv100.mv1002list("./ml-100k/u5.test")
+train_list = mv100.mv1002list(args.train_matrix)
+test_list = mv100.mv1002list(args.test_matrix)
 test_rm = csr_matrix(mv100.creat_matrix(test_list))
 train_rm = csr_matrix(mv100.creat_matrix(train_list))
 print("in the movie-100k datasets, there are {} users and {} items !".format(train_rm.shape[0], train_rm.shape[1]))
 
 m = train_rm.shape[0]  # the numbers of user
 n = train_rm.shape[1]  # the numbers of item
-k = 50  # Hyper parameters
+k = args.k # Hyper parameters
 
 p = csr_matrix(np.full((m, k), (3 / k) ** 0.5))  # the first matrix
 q = csr_matrix(np.full((k, n), (3 / k) ** 0.5))  # the second matrix
-epochs = 300
-lr = 0.0001
+epochs = args.e
+lr = args.lr
 erm = p.dot(q)  # estimated rating matrix
-
+path = args.o
 rows, cols = train_rm.nonzero()
 # for epoch in range(0,epochs):
 
@@ -80,4 +94,5 @@ for epoch in range(0, epochs):
     test_loss.append(test_loss_)
     train_loss.append(train_loss_)
     #plt.plot(x, train_loss, test_loss)
-    np.save("save_matrix"+str(epoch), np.array(p.dot(q).todense()))
+
+    np.save(path+"save_matrix"+str(epoch), np.array(p.dot(q).todense()))
