@@ -1,7 +1,7 @@
 # Installation
     git clone https://github.com/Jas000n/NMF_sparse.git
 # Usage
-    cd NFM_sparse
+    cd NMF_sparse
     python NMF.py [-h] [-lr LR | -k K | -e E | -o O] train_matrix test_matrix
 # Parameters
     positional arguments:
