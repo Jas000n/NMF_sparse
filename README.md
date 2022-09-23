@@ -15,6 +15,9 @@
         -k K          width of matrix1 and length of matrix2
         -e E          max iterations
         -o O          path of output files
+# Example
+    python NMF.py ./ml-100k/u5_fix.base ./ml-100k/u5.test
+
 
 
 
