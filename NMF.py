@@ -11,7 +11,7 @@ parser.add_argument("train_matrix", help="input test matrix")
 parser.add_argument("test_matrix", help="input test matrix")
 args = parser.parse_args()
 
-print(args.train_matrix,args.test_matrix)
+
 import time
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -54,7 +54,7 @@ train_list = mv100.mv1002list(args.train_matrix)
 test_list = mv100.mv1002list(args.test_matrix)
 test_rm = csr_matrix(mv100.creat_matrix(test_list))
 train_rm = csr_matrix(mv100.creat_matrix(train_list))
-print("in the movie-100k datasets, there are {} users and {} items !".format(train_rm.shape[0], train_rm.shape[1]))
+print("in your datasets, there are {} users and {} items !".format(train_rm.shape[0], train_rm.shape[1]))
 
 m = train_rm.shape[0]  # the numbers of user
 n = train_rm.shape[1]  # the numbers of item
