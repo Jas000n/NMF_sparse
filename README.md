@@ -1,5 +1,6 @@
 # Installation
     git clone https://github.com/Jas000n/NMF_sparse.git
+    pip install requirements.txt
 # Usage
     cd NMF_sparse
     python NMF.py [-h] [-lr LR | -k K | -e E | -o O] train_matrix test_matrix
