@@ -7,7 +7,7 @@ group.add_argument("-lr",help="learning rate",default=0.0001,type=float)
 group.add_argument("-k",help="width of matrix1 and length of matrix2",default=50,type=int)
 group.add_argument("-e",help="max iterations",default=30,type=int)
 group.add_argument('-o',help="path of output files",default="./saved_path")
-parser.add_argument("train_matrix", help="input test matrix")
+parser.add_argument("train_matrix", help="input train matrix")
 parser.add_argument("test_matrix", help="input test matrix")
 args = parser.parse_args()
 

@@ -6,7 +6,7 @@
     python NMF.py [-h] [-lr LR | -k K | -e E | -o O] train_matrix test_matrix
 # Parameters
     positional arguments:
-        train_matrix  input test matrix
+        train_matrix  input train matrix
         test_matrix   input test matrix
 
     optional arguments:
